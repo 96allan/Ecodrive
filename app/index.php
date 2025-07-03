@@ -1,9 +1,11 @@
 <?php
 session_start();
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    require 'config.php';
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+require 'config.php';
+
+//Handle loging
+if (isset($_POST['login'])) {
+    $email = $_POST['login_email'];
+    $password = $_POST['login_password'];
 
     $query = $conn->prepare("SELECT * FROM users WHERE email=?");
     $query->bind_param("s", $email);
@@ -14,8 +16,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['user_id'] = $result['user_id'];
         header("Location: dashboard.php");
     } else {
-        $error = "Invalid login credentials";
+        $login_error = "Invalid login credentials.";
     }
+}
+
+//Handle Signup
+if (isset($_POST['signup'])) {
+  $name = $_POST['signup_name'];
+  $email = $_POST['signup_email'];
+  $password = password_hash($_POST['signup_password'], PASSWORD_BCRYPT);
+  $role = 'EV owner';
+
+  $check = $conn->prepare("SELECT * FROM users WHERE email=?");
+  $check->bind_param("s", $email);
+  $check->execute();
+  $existing = $check->get_result()->fetch_assoc();
+
+  if ($existing) {
+    $signup_error = "Email already registered.";
+  } else {
+    $stmt = $conn->prepare("INSERT INTO users (name, email, password, role ) VALUES (?, ?, ?, ?)");
+    $stmt->bind_param("ssss", $name, $email, $password, $role);
+    if ($stmt->execute()) {
+      $sign_success = "Account created! Please log in.";
+      else {
+        $signup_error = "Error creating account.";
+      }
+    }
+  }
 }
 ?>
 <!DOCTYPE html>
