@@ -1,29 +1,35 @@
-version: '3.8'
+version: '3.8' #docker compose version
 
 services:
-  web:
-    build: .
+  web: #PHP/apache web services
+    build: . # uses the  Dockerfile in the root directory
+    container_name: ecodrive-app #custom container name for the app
     ports:
-      - "8080:80"
+      - "8080:80" #maps localhost:8080 -> container:80 (apache default)
     volumes:
-      - ./app:/var/www/html/
+      - ./app:/var/www/html/ #mount your PHP code to apache web root
     environment:
+    #these values are passed into PHP's config.phh via getenv()
       MYSQL_HOST: db
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_DATABASE: ecodrive
+      MYSQL_PORT: 3306
     depends_on:
-      - db
+      - db #Ensures the MYSQL service starts before the web app
 
-  db:
-    image: mysql:8
+  db: #MYSQL database service
+    image: mysql:8 #use mysql 8 official image
+    container_name: ecodrive-db
     restart: always
+    ports:
+     -"3306:3306" #optional: expose DB for local DB tools like DBeaver 
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ecodrive
+      MYSQL_ROOT_PASSWORD: root #root paaswaro for MYSQL
+      MYSQL_DATABASE: ecodrive #Auto creates the DB at startup
     volumes:
-      - db_data:/var/lib/mysql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - db_data:/var/lib/mysql #persistent storage for DB data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql # auto-runs this SQL file once on first start
 
 volumes:
-  db_data:
+  db_data: # named volume to persist MYSQL data between runs
