@@ -44,7 +44,6 @@ if (isset($_POST['signup'])) {
       }
     }
   }
-}
 ?>
 <!DOCTYPE html>
 <html>
