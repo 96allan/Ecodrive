@@ -39,7 +39,7 @@ if (isset($_POST['signup'])) {
     $stmt->bind_param("ssss", $name, $email, $password, $role);
     if ($stmt->execute()) {
       $sign_success = "Account created! Please log in.";
-      else {
+    } else {
         $signup_error = "Error creating account.";
       }
     }
