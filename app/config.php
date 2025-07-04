@@ -1,5 +1,5 @@
 <?php
-$host = getenv('MYSQL_HOST') ?: 'localhost';
+$host = getenv('MYSQL_HOST') ?: '127.0.0.1'; //use IP not localhost
 $user = getenv('MYSQL_USER') ?: 'root';
 $pass = getenv('MYSQL_PASSWORD') ?: 'root';
 $db   = getenv('MYSQL_DATABASE') ?: 'ecodrive';
